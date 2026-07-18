@@ -1,0 +1,6 @@
+knowledge_base
+.idea
+*.iml
+docs/Anweisungen.md
+__pycache__/
+*.pyc
