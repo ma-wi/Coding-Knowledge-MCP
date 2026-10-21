@@ -1,0 +1,8 @@
+level: INFO
+json: true
+redact_fields:
+  - api_key
+  - authorization
+  - password
+  - token
+  - secret

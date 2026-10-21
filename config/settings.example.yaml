@@ -1,0 +1,123 @@
+database:
+  url: sqlite+aiosqlite:///./data/engineering_kb.sqlite3
+  echo: false
+
+qdrant:
+  url: http://127.0.0.1:6333
+  timeout_seconds: 10
+
+logging:
+  level: INFO
+  json: true
+  redact_fields: [api_key, authorization, password, token, secret]
+
+sources_file: config/sources.yaml
+active_profile: local_bge
+
+model_profiles:
+  embeddings:
+    local_bge_m3:
+      provider: local_transformers
+      model: BAAI/bge-m3
+      dimension: 1024
+      device: auto
+      precision: fp16
+      batch_size: 8
+      normalize: true
+      max_sequence_length: 2048
+      pooling: model_default
+      distance_metric: cosine
+      oom_retries: 2
+      cpu_fallback: true
+    local_qwen_06:
+      provider: local_transformers
+      model: Qwen/Qwen3-Embedding-0.6B
+      dimension: 1024
+      device: auto
+      precision: fp16
+      batch_size: 4
+      normalize: true
+      max_sequence_length: 2048
+      pooling: model_default
+      distance_metric: cosine
+      oom_retries: 2
+      cpu_fallback: true
+    cloud_embeddings:
+      provider: openai_compatible
+      model: configured-model
+      base_url_env: KB_EMBEDDING_BASE_URL
+      api_key_env: KB_EMBEDDING_API_KEY
+      device: cpu
+      precision: fp32
+      batch_size: 64
+      normalize: true
+      max_sequence_length: 8192
+      pooling: provider_default
+      distance_metric: cosine
+      timeout_seconds: 30
+  rerankers:
+    local_bge_m3:
+      provider: local_cross_encoder
+      model: BAAI/bge-reranker-v2-m3
+      device: auto
+      precision: fp16
+      batch_size: 4
+      max_sequence_length: 1024
+      oom_retries: 2
+      cpu_fallback: true
+    local_qwen_06:
+      provider: qwen_local
+      model: Qwen/Qwen3-Reranker-0.6B
+      device: auto
+      precision: fp16
+      batch_size: 2
+      max_sequence_length: 1536
+      oom_retries: 2
+      cpu_fallback: true
+    cloud_reranker:
+      provider: http_reranker
+      model: configured-reranker
+      base_url_env: KB_RERANK_BASE_URL
+      api_key_env: KB_RERANK_API_KEY
+      device: cpu
+      precision: fp32
+      batch_size: 32
+      max_sequence_length: 4096
+      timeout_seconds: 30
+  active_profiles:
+    local_bge:
+      embedding: local_bge_m3
+      reranker: local_bge_m3
+    local_qwen:
+      embedding: local_qwen_06
+      reranker: local_qwen_06
+    local_embedding_cloud_rerank:
+      embedding: local_bge_m3
+      reranker: cloud_reranker
+    cloud:
+      embedding: cloud_embeddings
+      reranker: cloud_reranker
+
+retrieval:
+  dense_candidates: 30
+  sparse_candidates: 30
+  fusion_candidates: 40
+  rerank_candidates: 20
+  final_results: 6
+  max_excerpt_tokens_per_result: 600
+  max_total_tokens: 4500
+  minimum_score: 0.0
+  rrf_k: 60
+  diversification_enabled: true
+  max_results_per_document: 2
+  max_results_per_source_version: 3
+  near_duplicate_threshold: 0.9
+
+chunking:
+  target_tokens: 700
+  max_tokens: 900
+  overlap_tokens: 80
+
+ingestion:
+  git_cache_path: data/git-cache
+  git_timeout_seconds: 120

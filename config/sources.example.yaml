@@ -1,0 +1,70 @@
+version: 1
+
+sources:
+  - id: local-pdfs
+    name: Local engineering PDFs
+    type: pdf_directory
+    enabled: true
+    path: ./knowledge_base
+    recursive: true
+    trust_level: 80
+    ocr_enabled: false
+    minimum_text_ratio: 0.05
+
+  - id: fastapi-docs
+    name: FastAPI official documentation
+    type: website
+    enabled: true
+    start_urls:
+      - https://fastapi.tiangolo.com/
+    allowed_domains:
+      - fastapi.tiangolo.com
+    allowed_paths: [/]
+    denied_paths: [/search/]
+    max_depth: 4
+    max_pages: 1500
+    request_delay_ms: 250
+    timeout_seconds: 20
+    max_document_size_mb: 10
+    retry_attempts: 2
+    respect_robots_txt: true
+    trust_level: 100
+
+  - id: python-patterns
+    name: Python Patterns
+    type: git
+    enabled: true
+    url: https://github.com/faif/python-patterns.git
+    branch: master
+    include: [README.md, docs/**, patterns/**/*.py, tests/**/*.py]
+    exclude: ["**/.git/**", "**/.env*", "**/*.pem", "**/*.key"]
+    trust_level: 70
+
+  - id: fastapi-best-practices
+    name: FastAPI best practices
+    type: git
+    enabled: true
+    url: https://github.com/zhanymkanov/fastapi-best-practices
+    branch: master
+    include: [ README.md, docs/**, patterns/**/*.py, tests/**/*.py ]
+    exclude: [ "**/.git/**", "**/.env*", "**/*.pem", "**/*.key" ]
+    trust_level: 70
+
+  - id: python-design-patterns
+    name: Python Design Patterns
+    type: website
+    enabled: true
+    start_urls:
+      - https://refactoring.guru/design-patterns/python
+    allowed_domains:
+      - refactoring.guru
+    allowed_paths: [ / ]
+    denied_paths: [ /search/ ]
+    max_depth: 4
+    max_pages: 1500
+    request_delay_ms: 250
+    timeout_seconds: 20
+    max_document_size_mb: 10
+    retry_attempts: 2
+    respect_robots_txt: true
+    trust_level: 100

@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "engineering-knowledge-mcp"
+version = "0.1.0"
+description = "Local engineering knowledge base exposed through MCP"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Proprietary" }
+authors = [{ name = "Engineering Knowledge MCP contributors" }]
+dependencies = [
+  "aiosqlite>=0.21,<1",
+  "alembic>=1.16,<2",
+  "beautifulsoup4>=4.13,<5",
+  "httpx>=0.28,<1",
+  "mcp>=1.26,<2",
+  "pydantic>=2.11,<3",
+  "pydantic-settings>=2.9,<3",
+  "pathspec>=0.12,<2",
+  "PyMuPDF>=1.26,<2",
+  "PyYAML>=6.0,<7",
+  "qdrant-client>=1.14,<2",
+  "SQLAlchemy[asyncio]>=2.0.40,<3",
+  "structlog>=25.2,<26",
+  "typer>=0.16,<1",
+]
+
+[project.optional-dependencies]
+models = [
+  "sentence-transformers>=5.1,<6",
+  "transformers>=4.51,<6",
+]
+dev = [
+  "build>=1.2,<2",
+  "mypy>=1.16,<2",
+  "pytest>=8.4,<9",
+  "pytest-asyncio>=1.0,<2",
+  "pytest-cov>=6.1,<8",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+kb = "engineering_kb.cli.main:app"
+kb-mcp = "engineering_kb.mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/engineering_kb"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers"
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = ["gpu: requires a CUDA-capable GPU and local model downloads"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "RUF"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["engineering_kb"]
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "yaml"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["torch", "sentence_transformers"]
+ignore_missing_imports = true
